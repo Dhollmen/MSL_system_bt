@@ -807,6 +807,9 @@ UINT8 *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *rem_len
         break;
 
     case BNEP_SETUP_CONNECTION_REQUEST_MSG:
+        if (*rem_len < 1) {
+          goto bad_packet_length;
+        }
         len = *p++;
         if (*rem_len < ((2 * len) + 1))
         {
@@ -828,6 +831,9 @@ UINT8 *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *rem_len
         break;
 
     case BNEP_FILTER_NET_TYPE_SET_MSG:
+        if (*rem_len < 2) {
+          goto bad_packet_length;
+        }
         BE_STREAM_TO_UINT16 (len, p);
         if (*rem_len < (len + 2))
         {
@@ -847,6 +853,9 @@ UINT8 *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *rem_len
         break;
 
     case BNEP_FILTER_MULTI_ADDR_SET_MSG:
+        if (*rem_len < 2) {
+          goto bad_packet_length;
+        }
         BE_STREAM_TO_UINT16 (len, p);
         if (*rem_len < (len + 2))
         {
@@ -884,6 +893,11 @@ UINT8 *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *rem_len
     }
 
     return p;
+
+bad_packet_length:
+    *rem_len = 0;
+    return NULL;
+    
 }
 
 
